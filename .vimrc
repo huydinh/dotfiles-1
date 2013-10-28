@@ -13,7 +13,7 @@ Bundle 'gmarik/vundle'
 "
 " original repos on github
 Bundle 'Lokaltog/vim-easymotion'
-Bundle 'Lokaltog/vim-powerline'
+"Bundle 'Lokaltog/vim-powerline'
 Bundle 'scrooloose/nerdtree'
 Bundle 'scrooloose/nerdcommenter'
 "Bundle 'scrooloose/syntastic'
@@ -26,7 +26,7 @@ Bundle 'tpope/vim-fugitive'
 Bundle 'tpope/vim-endwise'
 Bundle 'tpope/vim-repeat'
 Bundle 'godlygeek/tabular'
-Bundle 'mutewinter/vim-indent-guides'
+"Bundle 'mutewinter/vim-indent-guides'
 Bundle 'pangloss/vim-javascript'
 Bundle 'kchmck/vim-coffee-script'
 Bundle 'leshill/vim-json'
@@ -47,9 +47,14 @@ Bundle 'rking/ag.vim'
 Bundle 'garbas/vim-snipmate'
 Bundle 'vim-ruby/vim-ruby'
 "Bundle 'wincent/Command-T'
-Bundle 'tienle/vim-itermux'
+"Bundle 'tienle/vim-itermux'
+Bundle 'jgdavey/vim-turbux'
+Bundle 'jgdavey/tslime.vim'
 Bundle 'ervandew/supertab'
 Bundle 'sjl/gundo.vim'
+Bundle 'tpope/vim-unimpaired'
+Bundle 'tpope/vim-cucumber'
+Bundle 'christoomey/vim-tmux-navigator'
 
 " vim-scripts repos
 Bundle 'L9'
@@ -57,10 +62,12 @@ Bundle 'vis'
 Bundle 'bocau'
 Bundle 'YankRing.vim'
 Bundle 'altercation/vim-colors-solarized'
-Bundle 'kikijump/tslime.vim'
 Bundle 'Rainbow-Parenthesis'
 Bundle 'groenewege/vim-less'
 "Bundle 'jeffkreeftmeijer/vim-numbertoggle'
+
+Bundle 'thoughtbot/vim-rspec'
+Bundle 'tpope/vim-dispatch'
 
 "-----------------------------------------------------------------------------
 " General
@@ -75,6 +82,7 @@ set autoread                          " reload file
 set tabpagemax=50                     " open 50 tabs max
 set splitbelow
 set splitright
+set complete-=i
 if version>=730
   set undodir=~/.vim/.tmp,~/tmp,~/.tmp,/tmp
   set undofile
@@ -88,19 +96,23 @@ endif
 if !has("gui_running")
   set t_Co=256
   if !has('mac')
-    set term=xterm-256color
+    "set term==screen-256color
   endif
 endif
 
+"if &term =~ '256color'
+  "set t_ut=
+"endif
+
 syntax enable
 
-set background=dark
 let g:solarized_termcolors=256
 let g:solarized_contrast='high'
 let g:solarized_visibility='high'
 let g:solarized_termtrans=1
 colorscheme solarized
 "color bocau
+set background=dark
 
 if !has('mac')
   set guifont=ProggyCleanTT\ 14
@@ -181,6 +193,8 @@ autocmd BufWinLeave * call clearmatches()
 
 autocmd BufWritePre * :%s/\s\+$//e
 
+autocmd Filetype gitcommit setlocal spell textwidth=72
+
 "-----------------------------------------------------------------------------
 " Text formatting
 "-----------------------------------------------------------------------------
@@ -195,7 +209,7 @@ set shiftwidth=2
 set encoding=utf-8
 set vb t_vb=
 set virtualedit=all
-set textwidth=80
+"set textwidth=80
 set smartcase
 set expandtab
 set list
@@ -207,12 +221,6 @@ set listchars+=extends:>          " The character to show in the last column whe
                                   " off and the line continues beyond the right of the screen
 set listchars+=precedes:<         " The character to show in the last column when wrap is
                                   " off and the line continues beyond the right of the screen
-
-
-set foldmethod=syntax
-set foldnestmax=10
-set nofoldenable                        "don't fold by default
-set foldlevel=1
 "set clipboard+=unnamed                  " yanks go on clipboard instead
 set cinoptions=:0,p0,t0
 set cinwords=if,else,while,do,for,switch,case
@@ -346,12 +354,16 @@ nnoremap <leader>ev :CtrlP app/views<cr>
 
 nnoremap <F5> :GundoToggle<CR>
 
+nnoremap <Space> za
+vnoremap <Space> za
+
 " Skip to Model, View or Controller
 map <Leader>rm :Rmodel
 map <Leader>rv :Rview
 map <Leader>rc :Rcontroller
 
-map // <plug>NERDCommenterToggle
+"map // <plug>NERDCommenterToggle
+map <Leader>c<space> <plug>NERDCommenterToggle
 
 " Duplicate a selection in Visual mode: D
 vmap D y'>p
@@ -363,6 +375,7 @@ nnoremap <Esc> :noh<CR><Esc>
 
 "Ctrl + S to save
 map <C-s> :w<CR>
+nmap ss :w<CR>
 imap <C-s> <Esc>:w<CR>
 
 " Toogle buffer zoom
@@ -467,10 +480,10 @@ endif
 let g:no_itermux_mappings = 1
 let g:itermux_session_name = 'rspec'
 let g:rspec_drb = 1
-if has('mac')
-  nmap <leader>T <ESC>:call SendTestToiTerm(expand('%'))<CR>
-  nmap <leader>t <ESC>:call SendFocusedTestToiTerm(expand('%'), line('.'))<CR>
-endif
+"if has('mac')
+  "nmap <leader>T <ESC>:call SendTestToiTerm(expand('%'))<CR>
+  "nmap <leader>t <ESC>:call SendFocusedTestToiTerm(expand('%'), line('.'))<CR>
+"endif
 
 " Powerline theme
 let g:Powerline_symbols     = 'fancy'
@@ -508,9 +521,10 @@ endfunction
 "  Easymotion
 "  ---------------------------------------------------------------------------
 let g:EasyMotion_leader_key = '\'
-let g:EasyMotion_mapping_f  = '<Leader>m'
+let g:EasyMotion_mapping_f  = '//'
+let g:EasyMotion_mapping_F  = '<Leader>F'
 let g:EasyMotion_keys       = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
-let g:EasyMotion_do_shade   = 0
+let g:EasyMotion_do_shade   = 1
 
 
 "  ---------------------------------------------------------------------------
@@ -540,3 +554,61 @@ au BufNewFile,BufReadPost *.coffee setl foldmethod=indent
 au BufNewFile,BufReadPost *.scss setl foldmethod=indent
 au BufNewFile,BufReadPost *.sass setl foldmethod=indent
 au BufRead,BufNewFile *.scss set filetype=scss
+
+"  ---------------------------------------------------------------------------
+"  If cursor is in first or last line of window, scroll to middle line.
+"  ---------------------------------------------------------------------------
+nnoremap <silent> n n:call <SID>MaybeMiddle()<CR>
+nnoremap <silent> N N:call <SID>MaybeMiddle()<CR>
+
+function! s:MaybeMiddle()
+  if winline() < 3 || winline() > winheight(0) - 3
+    normal! zz
+  endif
+endfunction
+
+"  ---------------------------------------------------------------------------
+"  Folding
+"  ---------------------------------------------------------------------------
+"set foldmethod=syntax
+"set foldnestmax=10
+"set nofoldenable                        "don't fold by default
+"set foldlevel=1
+"setl foldtext=CustomFoldText()
+
+"fu! CustomFoldText()
+  ""get first non-blank line
+  "let fs = v:foldstart
+  "while getline(fs) =~ '^\s*$' | let fs = nextnonblank(fs + 1)
+  "endwhile
+  "if fs > v:foldend
+    "let line = getline(v:foldstart)
+  "else
+    "let line = substitute(getline(fs), '\t', repeat(' ', &tabstop), 'g')
+  "endif
+
+  "let w = winwidth(0) - &foldcolumn - (&number ? 8 : 0)
+  "let foldSize = 1 + v:foldend - v:foldstart
+  "let foldSizeStr = " " . foldSize . " lines "
+  ""let foldLevelStr = repeat("+--", v:foldlevel)
+  "let foldLevelStr = ''
+  "let lineCount = line("$")
+  "let foldPercentage = printf("[%.1f", (foldSize*1.0)/lineCount*100) . "%] "
+  "let expansionString = repeat(".", w - strwidth(foldSizeStr.line.foldLevelStr.foldPercentage))
+  "return line . expansionString .  foldSizeStr . foldPercentage .  foldLevelStr
+"endf
+
+"  ---------------------------------------------------------------------------
+"  Tmux configuration
+"  ---------------------------------------------------------------------------
+let g:turbux_runner            = 'tslime'
+let g:turbux_command_rspec     = 'Dispatch rspec'
+let g:turbux_command_test_unit = 'ruby'
+let g:turbux_command_cucumber  = 'cucumber'
+let g:turbux_command_turnip    = 'rspec'
+
+set cursorcolumn
+set cursorline
+
+let g:rspec_command = "Dispatch rspec {spec}"
+nmap <leader>d :Dispatch rspec %<CR>
